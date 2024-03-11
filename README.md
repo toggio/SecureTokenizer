@@ -70,13 +70,14 @@ echo $tokenizer->jsInit; // Print the JavaScript code for creating time-based to
 ## How It Works
 SecureTokenizer combines cryptographically secure random key generation with a sophisticated algorithm that includes:
 
-- Generating a strong encrypted cryptographycally secure random main key (nonce), included in the first part of the token.
-- Creating a psudo-randomly generated second part of the token that is encrypted using the nonce as key.
+- Generating a strong encrypted cryptographycally secure random main key `$nonce`, included in the first part of the token.
+- Creating a psudo-randomly generated second part of the token `$lsToken` that is encrypted using the nonce as key.
 - For time-based tokens, ensuring they are securely hashed (using SHA-256) for client-side (JavaScript) use, such as AJAX calls.
 - Ensuring all tokens are obfuscated and securely encrypted using both XOR operations and AES-256 encryption for maximum security.
+- Checking validity of received tokens even with time-based check
 
 ## Customization and Advanced Usage
-SecureTokenizer allows for detailed customization, including key changes, adjusting token length, and change time validity. For advanced usage and customization options, refer to the examples provided with the library, or the next section that will explain the various properties and methods of the class.
+SecureTokenizer allows for detailed customization, including key changes and change time validity. For advanced usage and customization options, refer to the examples provided with the library and the next section explaining the various properties and methods of this class.
 
 ## Public properties and methods
 
@@ -84,7 +85,7 @@ SecureTokenizer allows for detailed customization, including key changes, adjust
 
 - `string (binary)` **$nonce**: The "nonce", a cryptographically secure random key used in token generation. This properties is very useful, because its value can be used for secure encrypting and decrypting datas between sender and receiver.
 - `string` **$jsToken**: Initialization string for a JavaScript variable that includes the token code used for client-side Ajax requests.
-- `string (binary)` **$tbrToken**: Time-Based Reference Token, used for validating time-sensitive tokens.
+- `string (binary)` **$tbrToken**: Time-Based Reference Token, used for validating time-sensitive tokens. This public property is useful for debugging purpose.
 - `string` **$jsInit**: JavaScript code to include in your sender page containing functions for managing client-side (JavaScript) time-based token.
 
 ### Methods
