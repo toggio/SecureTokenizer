@@ -23,7 +23,7 @@ require_once 'path/to/SecureTokenizer.php';
 
 ### Generating a Secure Token
 ```php
-$key = 'A strong key 12345';
+$key = 'A strong key 12345!';
 $tokenizer = new secureTokenizer($key);
 
 $secureToken = $tokenizer->tokenCreate();
@@ -32,7 +32,7 @@ echo $secureToken; // Outputs the generated secure token
 
 ### Decrypting a Token
 ```php
-$key = 'A strong key 12345';
+$key = 'A strong key 12345!';
 $tokenizer = new secureTokenizer($key);
 
 // The token you get (for example via Ajax call)
@@ -44,7 +44,7 @@ echo $decryptedToken; // Outputs the decrypted content of the token
 
 ### Verifying a Token
 ```php
-$key = 'A strong key 12345';
+$key = 'A strong key 12345!';
 $tokenizer = new secureTokenizer($key);
 
 // The token you get (for example via Ajax call)
