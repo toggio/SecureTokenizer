@@ -2,8 +2,7 @@
 /*
  * Secure Tokenizer Class (SecureTokenizer) v0.9
  *
- * Library for generating and managing 
- * cryptogrphically secure tokens
+ * A PHP Library for Cryptographically Secure Token Generation and Management 
  *
  * SecureTokenizer is a sophisticated PHP library designed
  * to enhance web application security by providing advanced
@@ -11,7 +10,7 @@
  * This library integrates seamlessly into PHP/AJAX projects,
  * offering a robust solution for creating unpredictable,
  * cryptographically secure tokens suitable for authentication,
- * session management, encryption tasks, and more.
+ * session management, attack prevention, encryption tasks, and more.
  *
  * Copyright (C) 2024 under GPL v. 2 license
  * 12 March 2024
