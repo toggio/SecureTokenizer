@@ -46,6 +46,26 @@ if ($isTokenValid) {
 }
 ```
 
+### Generating a time-based token with repeated AJAX calls
+**PHP CODE**
+```php
+$key = 'A strong key 12345!';
+$tokenizer = new secureTokenizer($key);
+
+$secureToken = $tokenizer->tokenCreate(true);
+
+echo $tokenizer->jsInit; // Print the JavaScript code for creating time-based tokens
+```
+**HTML/JS CODE**
+```html
+<script>
+    function myAjaxRepeatedFunction() {
+        <?php echo $tokenizer->jsToken; ?> // Prints "let var token=.................;" - Code for generating JS time-based token
+        // The rest of my JavaScript function here
+    }
+</script>
+```
+
 ## How It Works
 SecureTokenizer combines cryptographically secure random key generation with a sophisticated algorithm that includes:
 
