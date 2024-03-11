@@ -1,7 +1,7 @@
 <?php
 require_once 'SecureTokenizer.php';
 
-$key = 'A strong key 12345';
+$key = 'A strong key 12345!';
 $tokenizer = new secureTokenizer($key);
 
 // Simple token generation
