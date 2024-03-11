@@ -39,8 +39,8 @@ class pseudoRandom {
 	private static $savedRSeed;
 	private static $RSeed = 0;		
 	private static $a = 1664525;
-    private static $c = 1013904223;
-    private static $m = 4294967296; // 2^32
+	private static $c = 1013904223;
+    	private static $m = 4294967296; // 2^32
 	private static $counter = 0;
 	
 	// Init the class
