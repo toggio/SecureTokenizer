@@ -96,8 +96,8 @@ class secureTokenizer {
 	
 	// Initialize class. If no key given, use timebased key
 	public function __construct($key = NULL) {
-		// $this->nonce = random_bytes(16);
 		if ($key) $this->key = $key; else $this->key = floor(time()/3600);
+		if (!isset($_SERVER['REMOTE_ADDR'])) $_SERVER['REMOTE_ADDR']="127.0.0.1";  
 		$this->length = 16;
 		$this->random = new pseudoRandom($key);		
 	}
@@ -130,8 +130,8 @@ class secureTokenizer {
 	
 	// Create second part (less significant) token The token is pseudocasual, but based on nonce (that is "true" casual)
 	public function lsTokenCreate() {
-		if (!$key) $key = $this->key;
-		if (!$length) $length = $this->length;
+		$key = $this->key;
+		$length = $this->length;
 		$this->random->saveStatus();
 		$this->reSeed($key);
 		
@@ -149,8 +149,8 @@ class secureTokenizer {
 	
 	// Create time-based token
 	public function tbTokenCreate($validity = 3, $offset = 0) {
-		if (!$key) $key = $this->key;
-		if (!$length) $length = $this->length;
+		$key = $this->key;
+		$length = $this->length;
 		
 		// Time based token is calculated on time and change every $validity seconds
 		$time = (string)floor((time()-0.1+$offset+15)/$validity);
@@ -287,8 +287,8 @@ class secureTokenizer {
 	
 	// Secure Token Creation
 	public function tokenCreate($timeBased = false, $validity=3, $jsVar = "token") {
-		if (!$key) $key = $this->key;
-		if (!$length) $length = $this->length;
+		$key = $this->key;
+		$length = $this->length;
 		
 		$this->random->saveStatus();
 		$this->reSeed($key);
@@ -318,8 +318,8 @@ class secureTokenizer {
 	
 	// Token decrypting - This function return lsToken and save nonce and tbrToken in their public vars
 	public function tokenDecrypt($string, $timeBased = false) {
-		if (!$key) $key = $this->key;
-		if (!$length) $length = $this->length;
+		$key = $this->key;
+		$length = $this->length;
 		
 		$this->random->saveStatus();
 		$this->reSeed($key);
@@ -350,8 +350,8 @@ class secureTokenizer {
 	
 	// Token checking - return true or false
 	public function checkToken($string, $timeBased = false, $validity = 3, $tolerance = 1) {
-		if (!$key) $key = $this->key;
-		if (!$length) $length = $this->length;
+		$key = $this->key;
+		$length = $this->length;
 		
 		$lsToken = $this->tokenDecrypt($string, $timeBased);
 		$myLsToken = $this->lsTokenCreate();
