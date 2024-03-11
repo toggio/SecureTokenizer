@@ -57,12 +57,22 @@ SecureTokenizer combines cryptographically secure random key generation with a s
 ## Customization and Advanced Usage
 SecureTokenizer allows for detailed customization, including key changes, adjusting token length, and change time validity. For advanced usage and customization options, refer to the examples provided with the library, or the next section that will explain the various properties and methods of the class.
 
-## Secure Tokenizer public properties and methods
+## Public properties and methods
 
 ### Properties
 
-- **$nonce** `string (binary)`: Contains the nonce, the cryptographically secure random key used in token generation. This properties is very usefull, because its value can be used for secure encrypting and decrypting datas between sender and receiver.
-- **jstoken** `string`: Initialization string for a JavaScript variable that includes the token code used for client-side token-based Ajax requests.
+- `string (binary)` **$nonce**: The "nonce", a cryptographically secure random key used in token generation. This properties is very useful, because its value can be used for secure encrypting and decrypting datas between sender and receiver.
+- `string` **$jsToken**: Initialization string for a JavaScript variable that includes the token code used for client-side Ajax requests.
+- `string (binary)` **$tbrToken**: Time-Based Reference Token, used for validating time-sensitive tokens.
+- `string` **$jsInit**: JavaScript code to include in your sender page containing functions for managing client-side (JavaScript) time-based token.
+
+### Methods
+
+- `string (hex)` **tokenCreate(bool $timeBased=false, int $validity=3, string $jsVar='token')**: Generates a secure token. If `$timeBased` is `true`, generates a time-based token with specified validity. Returns the encrypted token, and saves the string for initializating a Javascript variabile named `$jsvar` in the property `$jsToken`.
+- `string (binary)` **tokenDecrypt(string $string, bool $timeBased=false)**: Decrypts a given token hex string. If the token is time-based, handles decryption accordingly. Saves the value of nonce in the `$nonce` property and of time-based received token in `$tbrToken` property. Returns `$lsToken`
+- `bool` **checkToken(string $string, bool $timeBased=false, int $validity=3, int $tolerance=1)**: Validates a token against the generated reference. Checks time-based tokens with specified validity and tolerance. Returns `true` or `false`, and save nonce, and time-based token in their respective properties.
+- `string (binary)` **encrypt(string $string, string $key=null)**: Encrypts a given string (such as a token, nonce, or even text or binary data) with the specified key or the default key if none is provided. Useful for sending encrypted data using `$nonce` or `$lsToken` as key.
+- `string (binary)` **decrypt(string $string, string $key=null)**: Decrypts a given string (such as a token, nonce, or even text or binary data) with the specified key or the default key if none is provided. Useful for receiving encrypted data using `$nonce` or `$lsToken` as key.
 
 ## License
 SecureTokenizer is licensed under the Apache License, Version 2.0. You are free to use, modify, and distribute the library in compliance with the license.
