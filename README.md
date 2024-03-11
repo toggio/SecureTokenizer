@@ -30,24 +30,12 @@ $secureToken = $tokenizer->tokenCreate();
 echo $secureToken; // Outputs the generated secure token
 ```
 
-### Decrypting a Token
-```php
-$key = 'A strong key 12345!';
-$tokenizer = new secureTokenizer($key);
-
-// The token you get (for example via Ajax call)
-$secureToken = 'a05f970fe2732a77d57a7f784b050fca2f4ed5314e15dada4f0ab0dc24889318';
-
-$decryptedToken = $tokenizer->tokenDecrypt($secureToken);
-echo $decryptedToken; // Outputs the decrypted content of the token
-```
-
 ### Verifying a Token
 ```php
 $key = 'A strong key 12345!';
 $tokenizer = new secureTokenizer($key);
 
-// The token you get (for example via Ajax call)
+// The token you get (for example via Ajax request)
 $secureToken = 'a05f970fe2732a77d57a7f784b050fca2f4ed5314e15dada4f0ab0dc24889318';
 
 $isTokenValid = $tokenizer->checkToken($secureToken);
