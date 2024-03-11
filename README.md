@@ -55,7 +55,14 @@ SecureTokenizer combines cryptographically secure random key generation with a s
 - Ensuring all tokens are obfuscated and securely encrypted using both XOR operations and AES-256 encryption for maximum security.
 
 ## Customization and Advanced Usage
-SecureTokenizer allows for detailed customization, including key changes, adjusting token length, and change time validity. For advanced usage and customization options, refer to the examples provided with the library.
+SecureTokenizer allows for detailed customization, including key changes, adjusting token length, and change time validity. For advanced usage and customization options, refer to the examples provided with the library, or the next section that will explain the various properties and methods of the class.
+
+## Secure Tokenizer public properties and methods
+
+### Properties
+
+- **$nonce** `string (binary)`: Contains the nonce, the cryptographically secure random key used in token generation. This properties is very usefull, because its value can be used for secure encrypting and decrypting datas between sender and receiver.
+- **jstoken** `string`: Initialization string for a JavaScript variable that includes the token code used for client-side token-based Ajax requests.
 
 ## License
 SecureTokenizer is licensed under the Apache License, Version 2.0. You are free to use, modify, and distribute the library in compliance with the license.
