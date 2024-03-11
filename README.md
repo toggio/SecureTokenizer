@@ -60,7 +60,8 @@ echo $tokenizer->jsInit; // Print the JavaScript code for creating time-based to
 ```html
 <script>
     function myAjaxRepeatedFunction() {
-        <?php echo $tokenizer->jsToken; ?> // Prints "let var token=.................;" - Code for generating JS time-based token
+        // Prints "let var token=...;" - Code for generating JS time-based token
+        <?php echo $tokenizer->jsToken; ?>
         // The rest of my JavaScript function here
     }
 </script>
