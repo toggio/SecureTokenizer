@@ -1,2 +1,2 @@
 # SecureTokenizer
-Library for generating and managing cryptographically secure tokens for PHP/AJAX and web application
+A PHP Library for Cryptographically Secure Token Generation and Management
