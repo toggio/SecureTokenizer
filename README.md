@@ -6,7 +6,7 @@ SecureTokenizer is a powerful PHP library designed to enhance the security of we
 ## Features
 
 - **Cryptographically Secure Token Generation**: Leverages both PHP's `random_bytes` and OpenSSL's `openssl_random_pseudo_bytes` to achieve high entropy in token generation, ensuring each token is unique and unpredictable.
-- **Advanced Encryption and Decryption**:  Implements AES-256 for encryption and utilizes SHA-256 for hashing related data, making the tokens and associated processes cryptographically secure and virtually invulnerable to attacks.
+- **Advanced Encryption and Decryption**:  Implements AES-256 for encryption and utilizes SHA-256 for hashing related data, making the tokens and associated processes cryptographically secure and virtually invulnerable to attacks such XSS, CSRF, SQL-INJECTION, REPLAY, and so.
 - **JavaScript integration**: SecureTokenizer includes JavaScript code dynamic creation, enabling client-side time-based token generation. This facilitates seamless integration of secure token handling across client and server boundaries.
 - **Time-Based Token Generation**: Offers the capability to generate time-based tokens with customizable durations, limiting their validity to specific timeframes for enhanced security in time-sensitive operations.
 - **Flexibility and Security**: Designed to be easy and flexible for developers to integrate, while ensuring the highest level of security to protect against modern web threats.
@@ -46,7 +46,7 @@ if ($isTokenValid) {
 }
 ```
 
-### Generating a time-based token with repeated AJAX calls
+### Generating a time-based token with repeated AJAX requests
 **PHP CODE**
 ```php
 $key = 'A strong key 12345!';
@@ -72,7 +72,7 @@ SecureTokenizer combines cryptographically secure random key generation with a s
 
 - Generating a strong encrypted cryptographycally secure random main key `$nonce`, included in the first part of the token.
 - Creating a psudo-randomly generated second part of the token `$lsToken` that is encrypted using the nonce as key.
-- For time-based tokens, ensuring they are securely hashed (using SHA-256) for client-side (JavaScript) use, such as AJAX calls.
+- For time-based tokens, ensuring they are securely hashed (using SHA-256) for client-side (JavaScript) use, such as AJAX requests.
 - Ensuring all tokens are obfuscated and securely encrypted using both XOR operations and AES-256 encryption for maximum security.
 - Checking validity of received tokens even with time-based check
 
