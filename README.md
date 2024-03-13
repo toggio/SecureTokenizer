@@ -21,6 +21,18 @@ require_once 'path/to/SecureTokenizer.php';
 
 ## Quick Start Guide
 
+### Initializing the Class
+
+To initialize the `SecureTokenizer` class, use the following syntax:
+
+```php
+$tokenizer = new secureTokenizer($key);
+```
+
+The constructor accept two parameters:
+- `string` **$key**: the key for encrypt, decrypt and seed initialization
+- `bool` **$xss = true** (optional): if this value is the encryption key will include server and remote ip address for XSS attack prevention. This parameter is optional and defaults to true if not specified.
+
 ### Generating a Secure Token
 ```php
 $key = 'A strong key 12345!';
