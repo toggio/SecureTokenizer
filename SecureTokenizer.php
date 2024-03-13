@@ -93,11 +93,18 @@ class secureTokenizer {
 	public $jsToken;
 	public $tbrToken;
 	private $length;
+	private $remote_addr = "127.0.0.1";
+	private $server_addr = "127.0.0.1";
 	
 	// Initialize class. If no key given, use timebased key
-	public function __construct($key = NULL) {
+	public function __construct($key = NULL, $xss=true) {
 		if ($key) $this->key = $key; else $this->key = floor(time()/3600);
-		if (!isset($_SERVER['REMOTE_ADDR'])) $_SERVER['REMOTE_ADDR']="127.0.0.1";  
+				
+		// If XSS enabled, get remote_addr e server_addr in order to add them later to encryption key
+		if ( (isset($_SERVER['REMOTE_ADDR'])) && (isset($_SERVER['SERVER_ADDR'])) && ($xss) ) {
+			$this->remote_addr = $_SERVER['REMOTE_ADDR'];
+			$this->server_addr = $_SERVER['SERVER_ADDR'];
+		}
 		$this->length = 16;
 		$this->random = new pseudoRandom($key);		
 	}
@@ -113,8 +120,8 @@ class secureTokenizer {
 	}
 	
 	// Restart the class
-    private function restart($s = NULL, $mix = false) {
-		$this->__construct($s = NULL, $mix = false);
+    private function restart($s = NULL) {
+		$this->__construct($s = NULL);
 	}
     
    // Function for generating (pseudo) random bytes
@@ -139,8 +146,8 @@ class secureTokenizer {
 		$lsToken = $this->randBytes($length);
 		
 		// Pseudo casual lsToken swapping and shuffling based on nonce
-		$lsToken = $this->shuffleString($this->randBytes($length),md5($this->nonce),true);
-		$lsToken = $this->xorString($lsToken,hash('ripemd128',strrev($this->nonce)),true);
+		$lsToken = $this->shuffleString($this->randBytes($length),md5($this->nonce.$this->remote_addr),true);
+		$lsToken = $this->xorString($lsToken,hash('ripemd128',strrev($this->server_addr.$this->nonce)),true);
 		
 		$this->random->restoreStatus();
 		
@@ -156,8 +163,8 @@ class secureTokenizer {
 		$time = (string)floor((time()-0.1+$offset+15)/$validity);
 		
 		// In order to obfuscate nonce and key to javascript code and prevent attacking from different IP the two base-keys are sha256 hashed nonce, key, and remote ip
-		$md5Key1 = hash('sha256',$this->nonce.$this->key.$_SERVER['REMOTE_ADDR']);
-		$md5Key2 = hash('sha256',$this->key.$this->nonce);
+		$md5Key1 = hash('sha256',$this->nonce.$this->key.$this->remote_addr);
+		$md5Key2 = hash('sha256',$this->server_addr.$this->key.$this->nonce);
 		
 		// The the tbrtoken is calculated appending $time to the hashed key created before, and again hasehd (this time with md5 alg, that is more easy to calculate in js)
 		$tbToken = md5($md5Key1.$time).md5($md5Key2.$time);
@@ -238,12 +245,15 @@ class secureTokenizer {
 		$this->random->saveStatus();
 		
 		// Seed the PRNG with key and client ip address
-		$this->reSeed($key.$_SERVER['REMOTE_ADDR']);
+		$this->reSeed($this->server_addr.$key.$this->remote_addr);
 		
 		$ivlen = openssl_cipher_iv_length("aes-256-cfb");		
 		
 		// Pseudorandom iv (based on key)
 		$iv = $this->randBytes($ivlen);
+		$iv2 = $this->randBytes($ivlen);
+		
+		$key2 = $this->randBytes($ivlen);
 		
 		// Obufscating (not secure) part of encryption
 		$string = $this->xorString($string,$key,true);
@@ -252,7 +262,8 @@ class secureTokenizer {
 		$string = $this->shuffleString($string,$key,true);
 		
 		// Secure encrypt - the key is reversed and appended to the client ip address
-		$string = openssl_encrypt($string,"aes-256-cfb",$_SERVER['REMOTE_ADDR'].strrev($key),OPENSSL_RAW_DATA,$iv);
+		$string = openssl_encrypt($string,"aes-256-cfb",$this->server_addr.strrev($key).$this->remote_addr,OPENSSL_RAW_DATA,$iv);
+		$string = openssl_encrypt($string,"aes-256-ofb",$key2,OPENSSL_RAW_DATA,$iv2);
 
 		$this->random->restoreStatus();
 		return $string;
@@ -265,15 +276,19 @@ class secureTokenizer {
 		$this->random->saveStatus();
 		
 		// Seed the PRNG with key and client ip address
-		$this->reSeed($key.$_SERVER['REMOTE_ADDR']);
+		$this->reSeed($this->server_addr.$key.$this->remote_addr);
 		
 		$ivlen = openssl_cipher_iv_length("aes-256-cfb");
 		
 		// Pseudorandom iv (based on key)
 		$iv = $this->randBytes($ivlen);
+		$iv2 = $this->randBytes($ivlen);
+		
+		$key2 = $this->randBytes($ivlen);
 		
 		// Secure decrypt
-		$string = openssl_decrypt($string,"aes-256-cfb",$_SERVER['REMOTE_ADDR'].strrev($key),OPENSSL_RAW_DATA,$iv);
+		$string = openssl_decrypt($string,"aes-256-ofb",$key2,OPENSSL_RAW_DATA,$iv2);
+		$string = openssl_decrypt($string,"aes-256-cfb",$this->server_addr.strrev($key).$this->remote_addr,OPENSSL_RAW_DATA,$iv);
 			
 		// Decode string
 		$string = $this->shuffleString($string,$key,false);
@@ -295,6 +310,7 @@ class secureTokenizer {
 		
 		// This is the most cryptographically important part of the class - A crypto-secure random key (nonce) is created
 		$this->nonce = random_bytes($length/2) . openssl_random_pseudo_bytes($length/2);
+		// $this->nonce = "1234567890abcdef"; // For debug purpose
 		
 		// lsToken creation - this is pseudorandom but it will be encrypted with nonce
 		$lsToken = $this->lsTokenCreate($key,$length);
@@ -308,8 +324,8 @@ class secureTokenizer {
 		
 		// If the token is time-based, include time-based part
 		if (!$timeBased) $this->jsToken = "let $jsVar='$result';\n"; else {
-			$this->md5Key1 = hash('sha256',$this->nonce.$this->key.$_SERVER['REMOTE_ADDR']);
-			$this->md5Key2 = hash('sha256',$this->key.$this->nonce);
+			$this->md5Key1 = hash('sha256',$this->nonce.$this->key.$this->remote_addr);
+			$this->md5Key2 = hash('sha256',$this->server_addr.$this->key.$this->nonce);
 			$this->jsToken = "let $jsVar='$result' + MD5('$this->md5Key1' + (Math.floor(((Date.now()+15000)/1000)/$validity)).toString()) + MD5('$this->md5Key2' + (Math.floor(((Date.now()+15000)/1000)/$validity)).toString());\n";	
 			$result.=bin2hex($this->tbTokenCreate($validity));		
 		}
