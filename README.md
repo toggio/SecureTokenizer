@@ -117,10 +117,10 @@ SecureTokenizer combines cryptographically secure random key generation with a s
 - Creating a psudo-randomly generated second part of the token `$lsToken` that is encrypted using the nonce as key.
 - For time-based tokens, ensuring they are securely hashed (using SHA-256) for client-side (JavaScript) use, such as AJAX requests.
 - Ensuring all tokens are obfuscated and securely encrypted using both XOR operations and AES-256 encryption for maximum security.
-- Checking validity of received tokens even with time-based check
+- Checking validity of received tokens even with time-based check.
 
 ## Customization and Advanced Usage
-SecureTokenizer allows for detailed customization, including key changes and change time validity. For advanced usage and customization options, refer to the examples provided with the library and the next section explaining the various properties and methods of this class.
+SecureTokenizer allows for detailed customization, including key changes and change time validity. For advanced usage and customization options, refer to the examples provided with the library and the next section explaining the public properties and methods of this class.
 
 ## Public properties and methods
 
