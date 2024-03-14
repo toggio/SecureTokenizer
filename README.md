@@ -58,25 +58,56 @@ if ($isTokenValid) {
 }
 ```
 
-### Generating a time-based token with repeated AJAX requests
-**PHP CODE**
+## Practical Use Case Example
+
+In this example, we have a PHP page (server.php) that makes an AJAX request using JavaScript with the GET method to another page (receiver.php). The request includes a time-based token with a lifespan of 10 seconds. The receiver.php page checks the token, and print a token validity message.
+
+**sender.php**
+
 ```php
+<?php
+require("SecureTokenizer.php");
+
 $key = 'A strong key 12345!';
 $tokenizer = new secureTokenizer($key);
 
-$secureToken = $tokenizer->tokenCreate(true);
+$secureToken = $tokenizer->tokenCreate(true,10);
 
 echo $tokenizer->jsInit; // Print the JavaScript code for creating time-based tokens
-```
-**HTML/JS CODE**
-```html
+?>
+
 <script>
-    function myAjaxRepeatedFunction() {
+    function myAjaxFunction() {
         // Prints "let var token=...;" - Code for generating JS time-based token
         <?php echo $tokenizer->jsToken; ?>
-        // The rest of my JavaScript function here
+        fetch('receiver.php?token='+token)
+          .then(response => response.text()) 
+          .then(text => document.write(text)) 
+          .catch(error => console.error('Fetch error:', error));
     }
+    myAjaxFunction();
 </script>
+```
+
+**receiver.php**
+
+```php
+<?php
+require("SecureTokenizer.php");
+
+$key = 'A strong key 12345!';
+$tokenizer = new secureTokenizer($key);
+
+// The token you get (for example via Ajax request)
+if (isset($_GET["token"])) $secureToken = $_GET["token"]; else $secureToken = bin2hex(random_bytes(32));
+
+$isTokenValid = $tokenizer->checkToken($secureToken,true,10);
+if ($isTokenValid) {
+    echo "Token is valid.";
+} else {
+    echo "Token is invalid.";
+}
+?>
 ```
 
 ## How It Works
