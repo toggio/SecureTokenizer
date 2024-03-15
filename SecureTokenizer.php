@@ -146,7 +146,7 @@ class secureTokenizer {
 		$lsToken = $this->randBytes($length);
 		
 		// Pseudo casual lsToken swapping and shuffling based on nonce
-		$lsToken = $this->shuffleString($this->randBytes($length),md5($this->nonce.$this->remote_addr),true);
+		$lsToken = $this->shuffleString($lsToken,md5($this->nonce.$this->remote_addr),true);
 		$lsToken = $this->xorString($lsToken,hash('ripemd128',strrev($this->server_addr.$this->nonce)),true);
 		
 		$this->random->restoreStatus();
