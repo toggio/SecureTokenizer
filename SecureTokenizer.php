@@ -1,6 +1,6 @@
 <?php
 /*
- * Secure Tokenizer Class (SecureTokenizer) v0.9
+ * Secure Tokenizer Class (SecureTokenizer) v1.0.1
  *
  * A PHP Library for Cryptographically Secure Token Generation and Management 
  *
@@ -40,7 +40,7 @@ class pseudoRandom {
 	private static $RSeed = 0;		
 	private static $a = 1664525;
 	private static $c = 1013904223;
-    	private static $m = 4294967296; // 2^32
+        private static $m = 4294967296; // 2^32
 	private static $counter = 0;
 	
 	// Init the class
@@ -74,12 +74,24 @@ class pseudoRandom {
         }
     }
 	
-	// Generate random integer
+	// Generate (pseudo) random integer
 	public function randInt($min = 0, $max = 255) {
-		self::$c = crc32(self::$RSeed . self::$counter);
+		self::$c = crc32(self::$counter. self::$RSeed . self::$counter);
 		self::$RSeed = (self::$RSeed * self::$a + self::$c) % self::$m;
+		self::$counter += 1;
 		return (int)floor((self::$RSeed / self::$m) * ($max - $min + 1) + $min);
 	}
+	
+	// Generate (pseudo) random bytes
+	public function randBytes($len = 1, $decimal=false, $readable = false) {
+		$char = '';
+		if ($decimal) $char = Array();
+		for ($i=0; $i<$len; $i++) {
+			if ($readable) $n = $this->randInt(32,126); else $n = $this->randInt();
+			if (!$decimal) $char.= chr($n); else $char[]=$n;
+		}
+		return $char;
+    }
 }
 
 // Class for secure token generation, check, and management
@@ -105,13 +117,9 @@ class secureTokenizer {
 			$this->remote_addr = $_SERVER['REMOTE_ADDR'];
 			$this->server_addr = $_SERVER['SERVER_ADDR'];
 		}
-		$this->length = 16;
+		// Nonce and lstoken lenght in bytes (so 32bytes = 256bit)
+		$this->length = 32;
 		$this->random = new pseudoRandom($key);		
-	}
-	
-	// Reseed random number generator
-	private function reSeed($key) {
-		$this->random->reSeed($key);
 	}
 	
 	// Change encryption/generation key
@@ -124,26 +132,15 @@ class secureTokenizer {
 		$this->__construct($s = NULL);
 	}
     
-   // Function for generating (pseudo) random bytes
-   private function randBytes($len = 1, $decimal=false, $readable = false) {
-		$char = '';
-		if ($decimal) $char = Array();
-		for ($i=0; $i<$len; $i++) {
-			if ($readable) $n = $this->random->randInt(32,126); else $n = $this->random->randInt();
-			if (!$decimal) $char.= chr($n); else $char[]=$n;
-		}
-		return $char;
-    }
-	
 	// Create second part (less significant) token The token is pseudocasual, but based on nonce (that is "true" casual)
 	public function lsTokenCreate() {
 		$key = $this->key;
 		$length = $this->length;
 		$this->random->saveStatus();
-		$this->reSeed($key);
+		$this->random->reSeed($this->server_addr.$this->nonce.$this->remote_addr);
 		
 		// Pseduo-casual generator (seeded by key)
-		$lsToken = $this->randBytes($length);
+		$lsToken = $this->random->randBytes($length);
 		
 		// Pseudo casual lsToken swapping and shuffling based on nonce
 		$lsToken = $this->shuffleString($lsToken,md5($this->nonce.$this->remote_addr),true);
@@ -166,7 +163,7 @@ class secureTokenizer {
 		$md5Key1 = hash('sha256',$this->nonce.$this->key.$this->remote_addr);
 		$md5Key2 = hash('sha256',$this->server_addr.$this->key.$this->nonce);
 		
-		// The the tbrtoken is calculated appending $time to the hashed key created before, and again hasehd (this time with md5 alg, that is more easy to calculate in js)
+		// The tbrtoken is calculated appending $time to the hashed key created before, and again hasehd (this time with md5 alg, that is more easy to calculate in js)
 		$tbToken = md5($md5Key1.$time).md5($md5Key2.$time);
 		// $tbrToken = $md5Key;
 		return hex2bin($tbToken);
@@ -245,15 +242,15 @@ class secureTokenizer {
 		$this->random->saveStatus();
 		
 		// Seed the PRNG with key and client ip address
-		$this->reSeed($this->server_addr.$key.$this->remote_addr);
+		$this->random->reSeed($this->server_addr.$key.$this->remote_addr);
 		
 		$ivlen = openssl_cipher_iv_length("aes-256-cfb");		
 		
 		// Pseudorandom iv (based on key)
-		$iv = $this->randBytes($ivlen);
-		$iv2 = $this->randBytes($ivlen);
+		$iv = $this->random->randBytes($ivlen);
+		$iv2 = $this->random->randBytes($ivlen);
 		
-		$key2 = $this->randBytes($ivlen);
+		$key2 = $this->random->randBytes($ivlen);
 		
 		// Obufscating (not secure) part of encryption
 		$string = $this->xorString($string,$key,true);
@@ -276,15 +273,15 @@ class secureTokenizer {
 		$this->random->saveStatus();
 		
 		// Seed the PRNG with key and client ip address
-		$this->reSeed($this->server_addr.$key.$this->remote_addr);
+		$this->random->reSeed($this->server_addr.$key.$this->remote_addr);
 		
 		$ivlen = openssl_cipher_iv_length("aes-256-cfb");
 		
 		// Pseudorandom iv (based on key)
-		$iv = $this->randBytes($ivlen);
-		$iv2 = $this->randBytes($ivlen);
+		$iv = $this->random->randBytes($ivlen);
+		$iv2 = $this->random->randBytes($ivlen);
 		
-		$key2 = $this->randBytes($ivlen);
+		$key2 = $this->random->randBytes($ivlen);
 		
 		// Secure decrypt
 		$string = openssl_decrypt($string,"aes-256-ofb",$key2,OPENSSL_RAW_DATA,$iv2);
@@ -306,7 +303,7 @@ class secureTokenizer {
 		$length = $this->length;
 		
 		$this->random->saveStatus();
-		$this->reSeed($key);
+		$this->random->reSeed($key);
 		
 		// This is the most cryptographically important part of the class - A crypto-secure random key (nonce) is created
 		$this->nonce = random_bytes($length/2) . openssl_random_pseudo_bytes($length/2);
@@ -338,7 +335,7 @@ class secureTokenizer {
 		$length = $this->length;
 		
 		$this->random->saveStatus();
-		$this->reSeed($key);
+		$this->random->reSeed($key);
 		
 		// If time-based token, extact tb part and save in public $tbrToken variable
 		if ($timeBased) {
