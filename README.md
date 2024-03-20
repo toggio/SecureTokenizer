@@ -141,7 +141,7 @@ SecureTokenizer allows for detailed customization, including key changes and cha
 
 ## Third-Party Licenses
 
-This project includes code from `js-sha256` by **Chen, Yi-Cyuan**, available at https://github.com/emn178/js-sha256, released under the [MIT License](https://opensource.org/license/mit)
+This project includes code from [**js-sha256**](https://github.com/emn178/js-sha256) by **Chen, Yi-Cyuan**, released under the [MIT License](https://opensource.org/license/mit)
 
 
 ## License
