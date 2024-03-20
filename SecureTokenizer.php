@@ -40,7 +40,7 @@ class pseudoRandom {
 	private static $RSeed = 0;		
 	private static $a = 1664525;
 	private static $c = 1013904223;
-        private static $m = 4294967296; // 2^32
+    private static $m = 4294967296; // 2^32
 	private static $counter = 0;
 	
 	// Init the class
@@ -159,12 +159,12 @@ class secureTokenizer {
 		// Time based token is calculated on time and change every $validity seconds
 		$time = (string)floor((time()-0.1+$offset+15)/$validity);
 		
-		// In order to obfuscate nonce and key to javascript code and prevent attacking from different IP the two base-keys are sha256 hashed nonce, key, and remote ip
+		// In order to obfuscate nonce and key to javascript code and prevent attacks from different IP the two base-keys are sha256 hashed along with nonce, key, remote ip and server ip
 		$md5Key1 = hash('sha256',$this->nonce.$this->key.$this->remote_addr);
 		$md5Key2 = hash('sha256',$this->server_addr.$this->key.$this->nonce);
 		
 		// The tbrtoken is calculated appending $time to the hashed key created before, and again hasehd (this time with md5 alg, that is more easy to calculate in js)
-		$tbToken = md5($md5Key1.$time).md5($md5Key2.$time);
+		$tbToken = md5($md5Key1.$time).md5($time.$md5Key2);
 		// $tbrToken = $md5Key;
 		return hex2bin($tbToken);
 	}
@@ -323,7 +323,7 @@ class secureTokenizer {
 		if (!$timeBased) $this->jsToken = "let $jsVar='$result';\n"; else {
 			$this->md5Key1 = hash('sha256',$this->nonce.$this->key.$this->remote_addr);
 			$this->md5Key2 = hash('sha256',$this->server_addr.$this->key.$this->nonce);
-			$this->jsToken = "let $jsVar='$result' + MD5('$this->md5Key1' + (Math.floor(((Date.now()+15000)/1000)/$validity)).toString()) + MD5('$this->md5Key2' + (Math.floor(((Date.now()+15000)/1000)/$validity)).toString());\n";	
+			$this->jsToken = "let $jsVar='$result' + MD5('$this->md5Key1' + (Math.floor(((Date.now()+15000)/1000)/$validity)).toString()) + MD5((Math.floor(((Date.now()+15000)/1000)/$validity)).toString()+'$this->md5Key2');\n";	
 			$result.=bin2hex($this->tbTokenCreate($validity));		
 		}
 		return $result;
