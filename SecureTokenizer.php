@@ -1,6 +1,6 @@
 <?php
 /*
- * Secure Tokenizer Class (SecureTokenizer) v1.0.2
+ * Secure Tokenizer Class (SecureTokenizer) v1.0.3 - 22 March 2024
  *
  * A PHP Library for Cryptographically Secure Token Generation and Management 
  *
@@ -12,8 +12,7 @@
  * cryptographically secure tokens suitable for authentication,
  * session management, attack prevention, encryption tasks, and more.
  *
- * Copyright (C) 2024 under GPL v. 2 license
- * 12 March 2024
+ * Copyright (C) 2024 under Apache License, Version 2.0
  *
  * @author Luca Soltoggio
  * https://www.lucasoltoggio.it
