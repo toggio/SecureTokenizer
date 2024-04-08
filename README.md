@@ -139,6 +139,13 @@ SecureTokenizer allows for detailed customization, including key changes and cha
 - `string (binary)` **encrypt(string $string, string $key=null)**: Encrypts a given string (such as a token, nonce, or even text or binary data) with the specified key or the default key if none is provided. Useful for sending encrypted data using `$nonce` or `$lsToken` as key.
 - `string (binary)` **decrypt(string $string, string $key=null)**: Decrypts a given string (such as a token, nonce, or even text or binary data) with the specified key or the default key if none is provided. Useful for receiving encrypted data using `$nonce` or `$lsToken` as key.
 
+## Help us
+
+If you find this project useful and would like to support its development, consider making a donation. Any contribution is greatly appreciated!
+
+**Bitcoin (BTC) Address:** `3Ctmurhy18PmkTKPa2s7PjfAKzR8ZBj8Na`
+
+
 ## Third-Party Licenses
 
 This project includes code from [**js-sha256**](https://github.com/emn178/js-sha256) by **Chen, Yi-Cyuan**, released under the [MIT License](https://opensource.org/license/mit)
