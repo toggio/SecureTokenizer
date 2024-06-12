@@ -113,8 +113,8 @@ if ($isTokenValid) {
 ## How It Works
 SecureTokenizer combines cryptographically secure random key generation with a sophisticated algorithm that includes:
 
-- Generating a strong encrypted cryptographycally secure random main key `$nonce`, included in the first part of the token.
-- Creating a pseudo-randomly generated second part of the token `$lsToken` that is encrypted using the nonce as key.
+- Generating a strong cryptographycally secure random main key `$nonce`, encrypted and included in the first part of the token.
+- Creating a pseudo-randomly generated second part of the token `$lsToken` encrypted using the nonce as key.
 - For time-based tokens, ensuring they are securely hashed (using SHA-256) for client-side (JavaScript) use, such as AJAX requests.
 - Ensuring all tokens are obfuscated and securely encrypted using both XOR operations and AES-256 encryption for maximum security.
 - Checking validity of received tokens even with time-based check.
